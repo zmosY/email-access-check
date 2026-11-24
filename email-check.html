@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Проверка доступа по email</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      background: #f3f6fa;
+      color: #182539;
+      font: 1rem / 1.5 system-ui, sans-serif;
+    }
+
+    main {
+      width: min(100%, 28rem);
+      padding: clamp(1.25rem, 5vw, 2rem);
+      background: #fff;
+      border: 1px solid #dce3ed;
+      border-radius: 1rem;
+      box-shadow: 0 12px 32px #18253912;
+    }
+
+    h1 { margin: 0 0 1.25rem; font-size: 1.5rem; line-height: 1.25; }
+
+    form { display: grid; gap: 0.75rem; }
+
+    label { font-weight: 600; }
+
+    input, button {
+      width: 100%;
+      min-height: 2.75rem;
+      padding: 0.625rem 0.75rem;
+      border-radius: 0.5rem;
+      font: inherit;
+    }
+
+    input { border: 1px solid #7d8da4; color: inherit; }
+
+    button {
+      border: 0;
+      background: #224ba3;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button:hover { background: #193c88; }
+
+    :focus-visible { outline: 2px solid #224ba3; outline-offset: 3px; }
+
+    #result { margin: 0; border-radius: 0.5rem; }
+    #result:not(:empty) { margin-top: 1rem; padding: 0.625rem 0.75rem; }
+    #result.denied { background: #fff0ef; color: #9d1c18; }
+    #result.allowed { background: #eaf7ee; color: #146333; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Проверка доступа по email</h1>
+    <form id="email-form">
+      <label for="email">Электронная почта</label>
+      <input type="email" id="email" name="email" autocomplete="email"
+             placeholder="name@example.com" required>
+      <button type="submit">Проверить</button>
+    </form>
+    <p id="result" role="status"></p>
+  </main>
+
+  <script>
+    const bannedEmails = [
+      'blocked@example.com',
+      'spam@example.com'
+    ];
+
+    const form = document.querySelector('#email-form');
+    const email = document.querySelector('#email');
+    const result = document.querySelector('#result');
+
+    const normalizeEmail = (address) => address.trim().toLowerCase();
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      const address = normalizeEmail(email.value);
+      const isBanned = bannedEmails.some((entry) => normalizeEmail(entry) === address);
+
+      result.className = isBanned ? 'denied' : 'allowed';
+      result.textContent = isBanned
+        ? 'Доступ запрещён. Этот адрес заблокирован.'
+        : 'Доступ разрешён.';
+    });
+
+    email.addEventListener('input', () => {
+      result.className = '';
+      result.textContent = '';
+    });
+  </script>
+</body>
+</html>
